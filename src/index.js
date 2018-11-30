@@ -1,9 +1,30 @@
+require('dotenv').config();
+
 const Koa = require('koa');
 const Router = require('koa-router');
 const api = require('./api');
 
 const app = new Koa();
 const router = new Router();
+
+const port = process.env.PORT || 4000;
+
+const mongoose = require('mongoose');
+const bodyParser = require('koa-bodyparser');
+
+mongoose.Promise = global.Promise;
+
+app.use(bodyParser());
+
+mongoose.connect(process.env.MONGO_URI, {
+    useMongoClient: true
+}).then(
+    (response) => {
+        console.log('Successfully connected to mongdb');
+    }
+).catch(e => {
+    console.error(e);
+});
 
 router.get('/', (ctx, next) => {
     ctx.body = 'Home';
@@ -43,6 +64,6 @@ app.use((ctx, next) => {
     next();
 });
 
-app.listen(4000, () => {
-    console.log('heurm is listening to port 4000');
+app.listen(port, () => {
+    console.log('heurm is listening to port' + port);
 });
